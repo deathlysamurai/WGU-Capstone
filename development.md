@@ -27,3 +27,27 @@ Backend web framework utilizing Python.
 pip install flask
 ```
 
+### Flask-SQLAlchemy
+
+A python SQL database toolkit and ORM.
+
+```
+pip install Flask-SQLAlchemy
+```
+
+### Flask-login
+
+Package to provide user session management.
+
+```
+pip install flask-login
+```
+
+### python-dotenv
+
+Package to read key/value pairs from .env file
+
+```
+pip install python-dotenv
+```
+

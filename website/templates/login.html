@@ -1,0 +1,29 @@
+{% extends "index.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <div class="card-container">
+        <div class="card card-blur">
+            <div class="card-body">
+                <form method="POST">
+                    <h3 class="text-center">Login</h3>
+                    <div class="inputbox">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email-username" id="email-username" name="email-username" required>
+                        <label for="email-username">Email/Username</label>
+                    </div>
+                    <div class="inputbox">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" required>
+                        <label for="password">Password</label>
+                    </div>
+                    <br>
+                    <button type="submit" class="w-100">Login</button>
+                    <div class="account-link">
+                        <p>Need An Account? <span><a href="/sign-up">Sign Up Now</a></span></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
