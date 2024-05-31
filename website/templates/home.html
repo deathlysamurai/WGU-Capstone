@@ -2,5 +2,18 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-    <h1>Welcome To KMWA</h1>
+    <div class="hero">
+        <div class="app-name">Kitchen Manager</div>
+        <div class="app-description">
+            Your all in one source for kitchen and cookspace management.
+        </div>
+    </div>
+    <button class="pantry-button button" type="button" onclick="location.href='/pantry'">Pantry</button>
+    <button class="meal-button button" type="button" onclick="location.href='/meals'">Meals</button>
+    <button class="sl-button button" type="button" onclick="location.href='/shopping'">Shopping List</button>
+    <div class="home-mobile-buttons">
+        <button class="button" type="button" onclick="location.href='/pantry'">Pantry</button>
+        <button class="button" type="button" onclick="location.href='/meals'">Meals</button>
+        <button class="button" type="button" onclick="location.href='/shopping'">Shopping List</button>
+    </div>
 {% endblock %}

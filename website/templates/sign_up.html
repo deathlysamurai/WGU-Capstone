@@ -30,7 +30,7 @@
                     <br>
                     <button type="submit" class="w-100">Sign Up</button>
                     <div class="account-link">
-                        <p>Have An Account? <span><a href="/login">Login Now</a></span></p>
+                        <p>Have An Account? <span><a href="/login?next={{ request.args.get('next') }}">Login Now</a></span></p>
                     </div>
                 </form>
             </div>

@@ -49,7 +49,9 @@ def login():
             if check_password_hash(user.password, password):
                 flash('Logged in successfully', category='success')
                 login_user(user, remember=True)
-                return redirect(url_for('views.home'))
+                next = request.args.get('next')
+                url = next if next else url_for('general.home')
+                return redirect(url)
             else:
                 flash('Incorrect password, try again', category='error')
         else:
@@ -73,11 +75,13 @@ def sign_up():
 
         if user_valid(username, email, password1, password2):
             #add user to database
-            user = User(username=username, email=email, password=generate_password_hash(password1, method='sha256'))
+            user = User(username=username, email=email, password=generate_password_hash(password1))
             db.session.add(user)
             db.session.commit()
             login_user(user, remember=True)
             flash('Account created.', category='success')
-            return redirect(url_for('views.home'))
+            next = request.args.get('next')
+            url = next if next else url_for('general.home')
+            return redirect(url)
 
     return render_template("sign_up.html", user=current_user, page="sign_up")

@@ -16,9 +16,15 @@ def create_app():
 
     from .controllers.general import general
     from .controllers.auth import auth
+    from .controllers.pantry import pantry
+    from .controllers.meals import meals
+    from .controllers.shopping import shopping
 
     app.register_blueprint(general, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
+    app.register_blueprint(pantry, url_prefix='/')
+    app.register_blueprint(meals, url_prefix='/')
+    app.register_blueprint(shopping, url_prefix='/')
 
     from .models import User
 
