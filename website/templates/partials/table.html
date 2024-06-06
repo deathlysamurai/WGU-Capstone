@@ -1,0 +1,185 @@
+<div class="table-header">
+    <h1 class="ms-5 mb-3 table-title">{{ table_title }}</h1>
+    <div class="card-container table-card-container">
+        <div class="card card-blur table-card">
+            <div class="card-body">
+                <div class="inputbox table-inputbox">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="table-search" name="table-search" required>
+                    <label for="table-search">Search</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" name="selectOptions" id="selectOptions" value="{{ json_select_options }}">
+{% if toolbar is sameas true %}
+    <table class="table table-dark mb-1 tool-row">
+        <tbody>
+        <tr>
+            <th scope="row" class="text-center"><i class="fa-solid fa-plus pointer" data-bs-toggle="modal" data-bs-target="#addItemModal"></i></th>
+            <th class="text-center"><i class="fa-solid fa-pen pointer disabled-tool editButton"></i></th>
+            <th class="text-center"><i class="fa-solid fa-trash pointer disabled-tool deleteButton createModal" id="modal-delete"></i></th>
+            <th class="text-center"><i class="fa-solid fa-floppy-disk pointer disabled-tool updateButton createModal" id="modal-update"></i></th>
+        </tr>
+        </tbody>
+    </table>
+{% endif %}
+{% if items %}
+    {% if clickable %}
+    <table class="table table-dark table-hover data-table table-clickable">
+    {% else %}
+    <table class="table table-dark table-hover data-table">
+    {% endif %}
+        <thead>
+        <tr>
+            {% if toolbar is sameas true %}
+                <th scope="col">
+                    <div class="form-check">
+                        <input class="form-check-input selectAllItems pointer" type="checkbox">
+                    </div>
+                </th>
+            {% endif %}
+                {% for col in table_columns %}
+                    <th scope="col">{{ col | capitalize }}</th>
+                {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+                <tr class="item-row pointer">
+                    <input type="hidden" class="item-id" value="{{ item['id'] }}">
+                    {% if toolbar is sameas true %}
+                        <th scope="row">
+                            <div class="form-check">
+                                <input class="form-check-input row-select pointer" type="checkbox">
+                            </div>
+                        </th>
+                    {% endif %}
+                    {% for col in table_columns %}
+                        {% if "url" in col %}
+                            <td id="col-{{ col }}"><span><a href="{{ item[col] }}" target="_blank" onclick="stopProp(event)">{{ item[col] }}</a></span></td>
+                        {% elif "id" in col %}
+                            <td id="col-{{ col }}"><span><a href="/{{col.split("_")[0]}}/{{ item[col] }}" onclick="stopProp(event)">{{ item[col] }}</a></span></td>
+                        {% else %}
+                            {% if col == "Unit Options" %}
+                                <td id="col-{{ col }}"><span>{{ display_units[item["id"]] if display_units[item["id"]]|length > 0}}</span></td>
+                            {% elif col == "name" and page == "pantry" %}
+                                <td id="col-{{ col }}" class="disable"><span>{{ item[col] }}</span></td>
+                            {% else %}
+                                <td id="col-{{ col }}"><span>{{ item[col] }}</span></td>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="alert alert-info d-flex justify-content-between" role="alert">
+        No {{ table_title }} Found.
+    </div>
+{% endif %}
+
+{% if toolbar is sameas true %}
+    <div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModal" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Add {{ table_title[:-1] }}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            {% if page == "pantry" %}
+            <form action="/{{ page }}/add-{{ table_title[:-1] | lower }}" method="POST">
+            {% elif admin_route %}
+            <form action="/admin/{{ table_title | lower }}/add-{{ table_title[:-1] | lower }}" method="POST">
+            {% endif %}
+                <div class="modal-body">
+                    {% for col in add_columns %}
+                        {% if col in ["access", "units"] %}
+                            <div>
+                                <select class="form-select" id="{{ col }}" name="{{ col }}" {{'multiple' if col == 'units'}}>
+                                    <option selected>Choose {{ col | capitalize}}</option>
+                                    {% for option in select_options %}
+                                        <option value="{{ select_options[option] }}">{{ option | capitalize }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% elif col == "unit" %}
+                        <div class="inputbox">
+                            <input id="unit" type="text" name="unit" list="unit_options">
+                                <datalist id="unit_options">
+                                    {% for option in select_options %}
+                                        <option value="{{ option | capitalize }}">
+                                    {% endfor %}
+                                </datalist>
+                            <label style="top: -5px !important;" for="{{ col }}">{{ col | capitalize }}</label>
+                        </div>
+                        {% else %}
+                            <div class="inputbox">
+                                {% if col == "expiration" %}
+                                    <input type="date" id="{{ col }}" name="{{ col }}" required>
+                                {% else %}
+                                    <input type="{{ 'password' if col == 'password' else 'text'}}" id="{{ col }}" name="{{ col }}" required>
+                                {% endif %}
+                                <label {{'style=top:-5px!important;' if col == "expiration"}} for="{{ col }}">{{ col | capitalize }}</label>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-secondary">Add</button>
+                </div>
+            </form>
+        </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteItemsModal" tabindex="-1" aria-labelledby="deleteItemsModal" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h1 class="modal-title fs-5">Delete {{ table_title }}</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            {% if page == "pantry" %}
+            <form action="/{{ page }}/delete-{{ table_title | lower }}" method="POST">
+            {% elif admin_route %}
+            <form action="/admin/{{ table_title | lower }}/delete-{{ table_title | lower }}" method="POST">
+            {% endif %}
+                <div class="modal-body">
+                    <input type='hidden' name='delete-items' id="delete-items" value='' />
+                    <p>Are you sure you would like to delete {{ table_title | lower }}?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-secondary">Delete</button>
+                </div>
+            </form>
+        </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="updateItemsModal" tabindex="-1" aria-labelledby="updateItemsModal" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h1 class="modal-title fs-5">Update {{ table_title }}</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            {% if page == "pantry" %}
+            <form action="/{{ page }}/update-{{ table_title | lower }}" method="POST">
+            {% elif admin_route %}
+            <form action="/admin/{{ table_title | lower }}/update-{{ table_title | lower }}" method="POST">
+            {% endif %}
+                <div class="modal-body">
+                    <input type='hidden' name='update-items' id="update-items" value='' />
+                    <p>Are you sure you would like to update {{ table_title | lower }}?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-secondary">Update</button>
+                </div>
+            </form>
+        </div>
+        </div>
+    </div>
+{% endif %}

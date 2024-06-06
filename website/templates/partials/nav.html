@@ -7,16 +7,17 @@
         <div class="nav flex-fill">
             {% if admin_route %}
                 <a class="nav-item nav-link {{ 'active-link' if page == 'home'}}" href="/home">Home</a>
-                <a class="nav-item nav-link {{ 'active-link' if page == 'admin_home'}}" href="/admin/home">Admin</a>
+                <a class="nav-item nav-link {{ 'active-link' if page == 'admin_home'}}" href="/admin">Admin</a>
                 <a class="nav-item nav-link {{ 'active-link' if page == 'users'}}" href="/admin/users">Users</a>
-                <a class="nav-item nav-link {{ 'active-link' if page == 'podcasts'}}" href="/admin/podcasts">Podcasts</a>
-                <a class="nav-item nav-link {{ 'active-link' if page == 'episodes'}}" href="/admin/episodes">Episodes</a>
+                <a class="nav-item nav-link {{ 'active-link' if page == 'foods'}}" href="/admin/foods">Foods</a>
+                <a class="nav-item nav-link {{ 'active-link' if page == 'units'}}" href="/admin/units">Units</a>
+                <a class="nav-item nav-link {{ 'active-link' if page == 'user foods'}}" href="/admin/user_foods">User Foods</a>
                 <div class="d-flex flex-grow-1 justify-content-end"><a class="nav-item nav-link" href="/logout">Logout</a></div>
             {% else %}
                 {% if user.is_authenticated %}
                     <a class="nav-item nav-link {{ 'active-link' if page == 'home'}}" href="/home">Home</a>
                     {% if user.is_authenticated and user.is_admin() %}
-                        <a class="nav-item nav-link {{ 'active-link' if page == 'admin_home'}}" href="/admin/home">Admin</a>
+                        <a class="nav-item nav-link {{ 'active-link' if page == 'admin_home'}}" href="/admin">Admin</a>
                     {% endif %}
                     <div class="d-flex flex-grow-1 justify-content-end"><a class="nav-item nav-link" href="/logout">Logout</a></div>
                 {% else %}

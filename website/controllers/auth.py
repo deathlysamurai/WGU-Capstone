@@ -3,12 +3,13 @@ from ..models import User
 from .. import db
 from flask_login import current_user, login_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy import func
 
 auth = Blueprint('auth', __name__)
 
 def user_valid(username, email, password1 = None, password2 = None):
-    username_check = User.query.filter_by(username=username).first() if username is not None else None
-    email_check = User.query.filter_by(email=email).first() if email is not None else None
+    username_check = User.query.filter(func.lower(User.username) == username.lower()).first() if username is not None else None
+    email_check = User.query.filter(func.lower(User.email) == email.lower()).first() if email is not None else None
 
     if username_check:
         flash('Username ('+username+') already exists', category='error')
@@ -35,15 +36,16 @@ def user_valid(username, email, password1 = None, password2 = None):
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('views.home'))
+        print("CURRENT USER IS AUTHENTICATED")
+        return redirect(url_for('general.home'))
 
     if request.method == 'POST':
         email_username = request.form.get("email-username")
         password = request.form.get('password')
 
-        user = User.query.filter_by(email=email_username).first()
+        user = User.query.filter(func.lower(User.email) == email_username.lower()).first()
         if not user:
-            user = User.query.filter_by(username=email_username).first()
+            user = User.query.filter(func.lower(User.username) == email_username.lower()).first()
         
         if user:
             if check_password_hash(user.password, password):

@@ -255,6 +255,44 @@ input:-internal-autofill-selected{
     display: none;
 }
 
+.table-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 5px;
+}
+
+.table-title {
+    flex-grow: 1;
+    margin-left: 10px !important;
+}
+
+.table-card-container {
+    min-height: unset;
+    padding: unset;
+}
+
+.table-card {
+    width: unset;
+}
+
+.table-inputbox {
+    margin: unset;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    background: transparent;
+    bottom: 0;
+    color: transparent;
+    cursor: pointer;
+    height: auto;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: auto;
+}
+
 @media screen and (max-width: 500px) {
     .pantry-button, .meal-button, .sl-button {
         display: none;
