@@ -1,0 +1,8 @@
+{% extends "index.html" %}
+{% block title %}Admin - Meal Foods{% endblock %}
+
+{% block content %}
+    {% with toolbar=false %}
+        {% include "partials/table.html" %}
+    {% endwith %}
+{% endblock %}

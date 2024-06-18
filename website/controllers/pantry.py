@@ -49,7 +49,9 @@ def add_food():
         day = int(exp_split[2])
         expiration = date(year, month, day)
 
-        if int(amount) <= 0:
+        if not amount.isdigit():
+            flash('Amount must be be a number.', category='error')
+        elif int(amount) <= 0:
             flash('Amount must be greater than 0.', category='error')
         else:
             unit = Unit.query.filter(func.lower(Unit.name) == unit_name.lower()).first()
@@ -103,17 +105,22 @@ def update_foods():
             day = int(exp_split[2])
             expiration = date(year, month, day)
             expiration = expiration if userFood.expiration != expiration else None
-            if amount and int(amount) > 0:
-                userFood.amount = update_food['amount']
-            if unit:
-                unit = Unit.query.get(unit)
+            if not amount.isdigit():
+                flash('Amount must be be a number.', category='error')
+            elif int(amount) <= 0:
+                flash('Amount must be greater than 0.', category='error')
+            else:
+                if amount:
+                    userFood.amount = update_food['amount']
                 if unit:
-                    userFood.unit = unit.id
-            if expiration:
-                userFood.expiration = expiration
-            if (amount and int(amount) > 0) or unit or expiration:
-                db.session.commit()
-                successful_foods += 1
+                    unit = Unit.query.get(unit)
+                    if unit:
+                        userFood.unit = unit.id
+                if expiration:
+                    userFood.expiration = expiration
+                if (amount and int(amount) > 0) or unit or expiration:
+                    db.session.commit()
+                    successful_foods += 1
         
         if(successful_foods > 0):
             flash(str(successful_foods)+" foods updated successfully.", category="success")  

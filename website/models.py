@@ -13,7 +13,15 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
     access = db.Column(db.Integer, default=0, nullable=False)
+    monMeal = db.Column(db.Integer, default=None, nullable=True)
+    tueMeal = db.Column(db.Integer, default=None, nullable=True)
+    wedMeal = db.Column(db.Integer, default=None, nullable=True)
+    thuMeal = db.Column(db.Integer, default=None, nullable=True)
+    friMeal = db.Column(db.Integer, default=None, nullable=True)
+    satMeal = db.Column(db.Integer, default=None, nullable=True)
+    sunMeal = db.Column(db.Integer, default=None, nullable=True)
     foods = db.relationship('Food', secondary='userFoods', back_populates='users')
+    meals = db.relationship('Meal', secondary='userMeals', back_populates='users')
 
     def is_admin(self):
         return self.access == ACCESS['admin']
@@ -36,6 +44,7 @@ class Food(db.Model):
     name = db.Column(db.String(150), unique=True, nullable=False)
     units = db.relationship('Unit', secondary='foodUnits', back_populates='foods')
     users = db.relationship('User', secondary='userFoods', back_populates='foods')
+    meals = db.relationship('Meal', secondary='mealFoods', back_populates='foods')
 
     def table_columns(self):
         hidden_props = ["id"]
@@ -53,6 +62,23 @@ class Unit(db.Model):
     abbreviation = db.Column(db.String(50), nullable=False)
     foods = db.relationship('Food', secondary='foodUnits', back_populates='units')
     pantries = db.relationship('UserFood')
+    meals = db.relationship('MealFood')
+
+    def table_columns(self):
+        hidden_props = ["id"]
+        return [prop.key for prop in class_mapper(self.__class__).iterate_properties
+                if isinstance(prop, ColumnProperty) and not prop.key in hidden_props]
+
+    def add_columns(self):
+        hidden_props = ["id"]
+        return [prop.key for prop in class_mapper(self.__class__).iterate_properties
+                if isinstance(prop, ColumnProperty) and not prop.key in hidden_props]
+    
+class Meal(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), unique=True, nullable=False)
+    foods = db.relationship('Food', secondary='mealFoods', back_populates='meals')
+    users = db.relationship('User', secondary='userMeals', back_populates='meals')
 
     def table_columns(self):
         hidden_props = ["id"]
@@ -82,18 +108,63 @@ class UserFood(db.Model):
         hidden_props = ["id", "user_id", "food_id"]
         return [prop.key for prop in class_mapper(self.__class__).iterate_properties
                 if isinstance(prop, ColumnProperty) and not prop.key in hidden_props]
+    
+class MealFood(db.Model):
+    __tablename__ = "mealFoods"
+    id = db.Column(db.Integer, primary_key=True)
+    meal_id = db.Column(db.Integer, db.ForeignKey('meal.id'))
+    food_id = db.Column(db.Integer, db.ForeignKey('food.id'))
+    amount = db.Column(db.Integer, nullable=False)
+    unit = db.Column(db.Integer, db.ForeignKey('unit.id'))
+    edits = db.relationship('UserMeal', secondary='mealEdits', back_populates='edits')
 
-# userFoods = db.Table('userFoods',
-#     db.Column('id', db.Integer, primary_key=True),
-#     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-#     db.Column('food_id', db.Integer, db.ForeignKey('food.id')),
-#     db.Column('amount', db.Integer, unique=True, nullable=False),
-#     db.Column('unit', db.Integer, nullable=False),
-#     db.Column('expiration', db.DateTime)
-# )
+    def table_columns(self):
+        hidden_props = ["id"]
+        return [prop.key for prop in class_mapper(self.__class__).iterate_properties
+                if isinstance(prop, ColumnProperty) and not prop.key in hidden_props]
 
-foodUnits = db.Table('foodUnits',
-    db.Column('id', db.Integer, primary_key=True),
-    db.Column('food_id', db.Integer, db.ForeignKey('food.id')),
-    db.Column('unit_id', db.Integer, db.ForeignKey('unit.id'))    
-)
+    def add_columns(self):
+        hidden_props = ["id", "meal_id", "food_id"]
+        return [prop.key for prop in class_mapper(self.__class__).iterate_properties
+                if isinstance(prop, ColumnProperty) and not prop.key in hidden_props]
+    
+class UserMeal(db.Model):
+    __tablename__ = "userMeals"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    meal_id = db.Column(db.Integer, db.ForeignKey('meal.id'))
+    edits = db.relationship('MealFood', secondary='mealEdits', back_populates='edits')
+
+    def table_columns(self):
+        hidden_props = ["id"]
+        return [prop.key for prop in class_mapper(self.__class__).iterate_properties
+                if isinstance(prop, ColumnProperty) and not prop.key in hidden_props]
+
+    def add_columns(self):
+        hidden_props = ["id", "user_id", "meal_id"]
+        return [prop.key for prop in class_mapper(self.__class__).iterate_properties
+                if isinstance(prop, ColumnProperty) and not prop.key in hidden_props]
+    
+class MealEdit(db.Model):
+    __tablename__ = "mealEdits"
+    id = db.Column(db.Integer, primary_key=True)
+    user_meal_id = db.Column(db.Integer, db.ForeignKey('userMeals.id'))
+    meal_food_id = db.Column(db.Integer, db.ForeignKey('mealFoods.id'))
+    amount = db.Column(db.Integer, nullable=False)
+    unit = db.Column(db.Integer, db.ForeignKey('unit.id'))
+
+    def table_columns(self):
+        hidden_props = ["id"]
+        return [prop.key for prop in class_mapper(self.__class__).iterate_properties
+                if isinstance(prop, ColumnProperty) and not prop.key in hidden_props]
+
+    def add_columns(self):
+        hidden_props = ["id", "user_id", "meal_food_id"]
+        return [prop.key for prop in class_mapper(self.__class__).iterate_properties
+                if isinstance(prop, ColumnProperty) and not prop.key in hidden_props]
+
+class FoodUnit(db.Model):
+    __tablename__ = "foodUnits"
+    id = db.Column(db.Integer, primary_key=True)
+    food_id = db.Column(db.Integer, db.ForeignKey('food.id'))
+    unit_id = db.Column(db.Integer, db.ForeignKey('unit.id'))

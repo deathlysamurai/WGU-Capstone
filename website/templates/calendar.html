@@ -1,0 +1,42 @@
+{% extends "index.html" %}
+{% block title %}Calendar{% endblock %}
+
+{% block content %}
+    <div id="calendar-container">
+        <div id="weekly-container" class="calendar">
+            {% for meal in weekly_meals %}
+                <div class="daily-meal calendar {{ 'today-meal' if today == loop.index0 }}">
+                    <div class="day-title">{{ days[loop.index0] }}</div>
+                    {% if meal %}
+                        <div class="meal-container">
+                            <form id="reset-meal" action="/meals/reset-weekly-meal" method="POST">
+                                <input type="hidden" name="weekday" id="weekday" value="{{ loop.index0 }}">
+                                <button type="submit" class="btn btn-secondary">Reset</button>
+                            </form>
+                            {{ meal.name }}
+                        </div>
+                    {% else %}
+                        <form action="/meals/update-weekly-meal" method="POST">
+                            <input type="hidden" name="weekday" id="weekday" value="{{ loop.index0 }}">
+                            <input type="hidden" name="calendar_page" id="calendar_page" value="True">
+                                <div>
+                                    <select class="form-select" id="weekly-meal-select" name="weekly-meal-select">
+                                        <option selected>Choose Meal</option>
+                                        {% for meal in meal_options %}
+                                            <option value="{{ meal.id }}">{{ meal.name | capitalize }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            <button type="submit" class="btn btn-secondary">Add</button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+        <div id="table-container">
+            {% with toolbar=false, no_search=true %}
+                {% include "partials/table.html" %}
+            {% endwith %}
+        </div>
+    </div>
+{% endblock %}

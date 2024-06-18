@@ -293,6 +293,199 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     width: auto;
 }
 
+#mealFoodContainer {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid white;
+    border-radius: 10px;
+    margin: 10px 5px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, .3);
+}
+
+.meal-food-item {
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.meal-food-item:not(:last-child) {
+    border-bottom: solid 1px white;
+}
+
+.removeNewMealFood {
+    flex-grow: 1;
+    text-align: right;
+}
+
+.food-col {
+
+}
+
+#meal-title {
+    font-size: 2.5rem;
+    text-align: center;
+    border-bottom: 2px dotted white;
+    display: flex;
+    padding: 5px;
+}
+
+#meal-title>div {
+    flex-grow: 1;
+}
+
+#meal-title>button {
+    padding: 0 10px !important;
+    border-radius: 10px !important;
+    height: unset;
+    font-size: unset;
+}
+
+#foods-container {
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.food-container {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid white;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.food-title-line, .food-data-line {
+    display: flex;
+}
+
+.food-title-line>*, .food-data-line>* {
+    width: 50%
+}
+
+.food-name {
+    font-size: 2rem;
+}
+
+.food-title-line {
+    border-bottom: 1px dashed white;
+    align-items: center;
+}
+
+.food-data-line {
+    align-items: end;
+    gap: 5px;
+}
+
+.food-amount>input {
+    max-width: 100%;
+}
+
+.food-unit-select:disabled {
+    color: black;
+}
+
+#add-food-container {
+    display: flex;
+    width: 50%;
+    border: 1px solid white;
+    border-radius: 10px;
+    padding: 10px;
+    gap: 20px;
+    justify-content: space-between;
+    max-width: 400px;
+}
+
+#new-food {
+    width: unset;
+}
+
+#add-food-button {
+    flex-grow: 1;
+    max-width: 25%;
+}
+
+#weekly-container {
+    display: flex;
+    gap: 10px;
+}
+
+.daily-meal {
+    border: 1px solid white;
+    border-radius: 5px;
+    flex-grow: 1;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    position: relative;
+    padding-top: 30px;
+}
+
+.today-meal {
+    border: 2px solid var(--bs-success);
+    box-shadow: 0 0 5px 1px var(--bs-success);
+}
+
+#weekly-meal-select {
+    margin-bottom: 5px;
+}
+
+.day-title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-bottom: 1px solid white;
+    border-right: 1px solid white;
+    border-bottom-right-radius: 5px;
+    padding: 0 5px;
+}
+
+#edit-calendar-container {
+    margin-bottom: 5px;
+}
+
+#edit-calendar-container>*>button {
+    width: 100%;
+}
+
+#weekly-container.calendar {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 30%;
+}
+
+#calendar-container {
+    display: flex;
+    gap: 10px;
+}
+
+#table-container {
+    flex-grow: 1;
+}
+
+#reset-meal {
+    position: absolute;
+    top: 0;
+    left: calc(100% - 74px);
+    padding: 5px;
+}
+#reset-meal>button {
+    background-color: var(--bs-danger);
+}
+
+.calendar-recommendation-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 @media screen and (max-width: 500px) {
     .pantry-button, .meal-button, .sl-button {
         display: none;
@@ -300,5 +493,24 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
     .home-mobile-buttons {
         display: flex;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    #weekly-container {
+        flex-direction: column;
+    }
+
+    .daily-meal {
+        aspect-ratio: unset;
+    }
+
+    #weekly-container.calendar {
+        width: 100%;
+        grid-auto-rows: 1fr;
+    }
+
+    #calendar-container {
+        flex-direction: column;
     }
 }

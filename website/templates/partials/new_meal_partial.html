@@ -1,0 +1,48 @@
+<button id="createMealHiddenButton" class="d-none" data-bs-toggle="modal" data-bs-target="#createMealModal"></button>
+<div class="modal fade" id="createMealModal" tabindex="-1" aria-labelledby="createMealModal" aria-hidden="true">
+    <div class="modal-dialog">
+    <div class="modal-content">
+        <input type="hidden" name="openMealModal" id="openMealModal" value="{{ open_meal_modal }}">
+        <input type="hidden" name="allFoods" id="allFoods" value="{{ all_foods }}">
+        <div class="modal-header">
+            <h1 class="modal-title fs-5">Create New Meal</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        {% if admin_route %}
+        <form action="/admin/{{ table_title | lower }}/create-{{ table_title[:-1] | lower }}" method="POST">
+        {% else %}
+        <form action="/{{ page }}/create-{{ table_title[:-1] | lower }}" method="POST">
+        {% endif %}
+            <div class="modal-body">
+                {% for col in create_columns %}
+                    {% if col in ["foods"] %}
+                        <div>
+                            <select class="form-select" id="new_meal_foods" name="new_meal_foods">
+                                <option selected>Choose {{ col | capitalize}}</option>
+                                {% for option in food_options %}
+                                    <option value="{{ food_options[option] }}">{{ option | capitalize }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% elif page in ["meals"] %}
+                    <div class="inputbox">
+                        <input id="{{ col }}" type="text" name="{{ col }}" list="options" value="{{ new_meal_name }}">
+                            <datalist id="options">
+                                {% for option in select_options %}
+                                    <option value="{{ option | capitalize }}">
+                                {% endfor %}
+                            </datalist>
+                        <label style="top: -5px !important;" for="{{ col }}">{{ col | capitalize }}</label>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                <div id="mealFoodContainer"></div>
+                <input type="hidden" name="chosenFoods" id="chosenFoods" value="[]">
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-secondary">Add</button>
+            </div>
+        </form>
+    </div>
+    </div>
+</div>

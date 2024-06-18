@@ -1,5 +1,5 @@
 from ...decorators import requires_access_level
-from ...models import ACCESS, Food, Unit, UserFood
+from ...models import ACCESS, Food, Unit
 from flask_login import current_user
 from flask import render_template, Blueprint, request, redirect, url_for, flash, json
 from ... import db
@@ -15,17 +15,17 @@ def foods():
     add_columns.append("units")
     table_columns = Food.table_columns(self=Food())
     table_columns.append("Unit Options")
-    display_units = {}
+    display_relationship = {}
     for food in foods:
-        display_units[food.id] = ''
+        display_relationship[food.id] = ''
         for i in range(len(food.units)):
-            display_units[food.id] = food.units[i].name if display_units[food.id] == '' else display_units[food.id] + ", " + food.units[i].name
+            display_relationship[food.id] = food.units[i].name if display_relationship[food.id] == '' else display_relationship[food.id] + ", " + food.units[i].name
     unit_options = {}
     units = Unit.query.all()
     for unit in units:
         unit_options[unit.name] = unit.id
 
-    return render_template("admin/foods.html", display_units=display_units, select_options=unit_options, json_select_options=json.dumps(unit_options), table_columns=table_columns, add_columns=add_columns, user=current_user, items=foods, table_title="Foods", admin_route=True, page="foods")
+    return render_template("admin/foods.html", display_relationship=display_relationship, select_options=unit_options, json_select_options=json.dumps(unit_options), table_columns=table_columns, add_columns=add_columns, user=current_user, items=foods, table_title="Foods", admin_route=True, page="foods")
 
 @admin_foods.route('/add-food', methods=['POST'])
 @requires_access_level(ACCESS['admin'])
@@ -79,19 +79,17 @@ def update_foods():
                 update_food['Unit Options'][i] = int(update_food['Unit Options'][i])
             food = Food.query.get_or_404(update_food['id'])
             name = update_food['name'] if food.name != update_food['name'] else None
-            units = update_food['Unit Options'] if food.units != update_food['Unit Options'] else None
-            print(update_food['Unit Options'])
+            units = True if food.units != update_food['Unit Options'] else None
             if name and name != '':
                 food.name = update_food['name']
             if units:
-                for unit in food.units:
+                for unit in food.units[:]:
                     if unit.id not in update_food['Unit Options']:
                         food.units.remove(unit)
                     else:
                         update_food['Unit Options'].remove(unit.id)
                 for i in range(len(update_food['Unit Options'])):
                     food.units.append(Unit.query.get(update_food['Unit Options'][i]))
-                print(food.units)
             if units or (name and name != ''):
                 db.session.commit()
                 successful_foods += 1

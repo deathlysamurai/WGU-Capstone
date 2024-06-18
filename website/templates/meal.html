@@ -1,0 +1,48 @@
+{% extends "index.html" %}
+{% block title %}{{ meal.name }}{% endblock %}
+
+{% block content %}
+    <div id="meal-container">
+        <div id="meal-title">
+            <div>{{ meal.name }}</div>
+            <button id="meal-edit-button" type="submit">Edit</button>
+        </div>
+        
+        <div id="foods-container">
+            <input type="hidden" name="mealName" id="mealName" value="{{ meal.name }}">
+            <input type="hidden" name="foodsJSON" id="foodsJSON" value="{{ foodsJSON }}">
+            <div class="d-none" id="add-food-container">
+                <select class="form-select" id="new-food" name="new-food">
+                    <option>Choose food</option>
+                    {% for food in all_foods %}
+                        <option value="{{ food.id }}" units="{{ food.unitsJSON }}">{{ food.name }}</option>
+                    {% endfor %}
+                </select>
+                <button id="add-food-button" type="submit">Add</button>
+            </div>
+            {% for food in foods %}
+            <div class="food-container">
+                <div class="food-title-line">
+                    <div class="food-name">{{food.name}}</div>
+                    <div class="remove-icon d-none"><i id="{{food.id}}" class="remove-food fa-solid fa-circle-xmark" style="cursor:pointer;float:right;font-size:1.5rem;"></i></div>
+                </div>
+                <div class="food-data-line">
+                    <div class="food-amount">
+                        <div>Amount:</div>
+                        <input class="food-data" type="number" id="amount-{{food.id}}" name="amount" value="{{ food.amount }}" disabled>
+                    </div>
+                    <div class="food-unit">
+                        <div>Unit:</div>
+                        <select units="{{ food.unitsJSON }}" class="food-data form-select food-unit-select" id="unit-{{food.id}}" name="unit" disabled>
+                            <option>Choose unit</option>
+                            {% for unit in food.units %}
+                                <option value="{{ unit.id }}" {{'selected' if food.unit == unit.id}}>{{ unit.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "index.html" %}
+{% block title %}Admin - Meals{% endblock %}
+
+{% block content %}
+    {% with toolbar=true, clickable=true %}
+        {% include "partials/table.html" %}
+    {% endwith %}
+    {% include "partials/new_meal_partial.html" %}
+{% endblock %}
