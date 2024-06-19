@@ -239,6 +239,14 @@ input:-internal-autofill-selected{
     padding: 0 20px;
 }
 
+.calendar-button {
+    position: absolute;
+    top: 20%;
+    left: 5%;
+    rotate: -15deg;
+    padding: 0 20px;
+}
+
 .sl-button {
     position: absolute;
     top: 60%;
@@ -487,7 +495,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 @media screen and (max-width: 500px) {
-    .pantry-button, .meal-button, .sl-button {
+    .pantry-button, .meal-button, .sl-button, .calendar-button {
         display: none;
     }
 

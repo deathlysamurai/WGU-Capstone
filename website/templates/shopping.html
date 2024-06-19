@@ -2,5 +2,7 @@
 {% block title %}Shopping List{% endblock %}
 
 {% block content %}
-    <div>Shopping List</div>
+    {% with toolbar=true %}
+        {% include "partials/table.html" %}
+    {% endwith %}
 {% endblock %}

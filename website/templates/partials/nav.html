@@ -8,12 +8,11 @@
             {% if admin_route %}
                 <a class="nav-item nav-link {{ 'active-link' if page == 'home'}}" href="/home">Home</a>
                 <a class="nav-item nav-link {{ 'active-link' if page == 'admin_home'}}" href="/admin">Admin</a>
-                <a class="nav-item nav-link {{ 'active-link' if page == 'users'}}" href="/admin/users">Users</a>
-                <a class="nav-item nav-link {{ 'active-link' if page == 'foods'}}" href="/admin/foods">Foods</a>
-                <a class="nav-item nav-link {{ 'active-link' if page == 'meals'}}" href="/admin/meals">Meals</a>
-                <a class="nav-item nav-link {{ 'active-link' if page == 'units'}}" href="/admin/units">Units</a>
-                <a class="nav-item nav-link {{ 'active-link' if page == 'user foods'}}" href="/admin/user_foods">User Foods</a>
-                <a class="nav-item nav-link {{ 'active-link' if page == 'meal foods'}}" href="/admin/meal_foods">Meal Foods</a>
+                <a class="nav-item nav-link {{ 'active-link' if page == 'pantry'}}" href="/pantry">Pantry</a>
+                    <a class="nav-item nav-link {{ 'active-link' if page == 'meals'}}" href="/meals">Meals</a>
+                    <a class="nav-item nav-link {{ 'active-link' if page == 'edit-calendar'}}" href="/meals/edit-calendar">Calendar</a>
+                    <a class="nav-item nav-link {{ 'active-link' if page == 'shopping'}}" href="/shopping">Shopping</a>
+                
                 <div class="d-flex flex-grow-1 justify-content-end"><a class="nav-item nav-link" href="/logout">Logout</a></div>
             {% else %}
                 {% if user.is_authenticated %}
@@ -21,6 +20,10 @@
                     {% if user.is_authenticated and user.is_admin() %}
                         <a class="nav-item nav-link {{ 'active-link' if page == 'admin_home'}}" href="/admin">Admin</a>
                     {% endif %}
+                    <a class="nav-item nav-link {{ 'active-link' if page == 'pantry'}}" href="/pantry">Pantry</a>
+                    <a class="nav-item nav-link {{ 'active-link' if page == 'meals'}}" href="/meals">Meals</a>
+                    <a class="nav-item nav-link {{ 'active-link' if page == 'edit-calendar'}}" href="/meals/edit-calendar">Calendar</a>
+                    <a class="nav-item nav-link {{ 'active-link' if page == 'shopping'}}" href="/shopping">Shopping</a>
                     <div class="d-flex flex-grow-1 justify-content-end"><a class="nav-item nav-link" href="/logout">Logout</a></div>
                 {% else %}
                     <a class="nav-item nav-link {{ 'active-link' if page == 'login'}}" href="/login">Login</a>

@@ -7,6 +7,19 @@ ACCESS = {
     'admin': 1
 }
 
+def convertUnits(from_unit, to_unit, value):
+    result = None
+    conversion_factor = {
+        "ounce": {"pound":.0625, "gram":28.3495},
+        "pound": {"ounce":16, "gram":453.592},
+        "gram": {"ounce":0.03527, "pound":0.0022},
+    }
+    if from_unit in conversion_factor:
+        if to_unit in conversion_factor[from_unit]:
+            result = value * conversion_factor[from_unit][to_unit]
+    
+    return result
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True, nullable=False)
@@ -22,6 +35,7 @@ class User(db.Model, UserMixin):
     sunMeal = db.Column(db.Integer, default=None, nullable=True)
     foods = db.relationship('Food', secondary='userFoods', back_populates='users')
     meals = db.relationship('Meal', secondary='userMeals', back_populates='users')
+    shopping_items = db.relationship('Food', secondary='shoppingItems', back_populates='users')
 
     def is_admin(self):
         return self.access == ACCESS['admin']
@@ -45,6 +59,7 @@ class Food(db.Model):
     units = db.relationship('Unit', secondary='foodUnits', back_populates='foods')
     users = db.relationship('User', secondary='userFoods', back_populates='foods')
     meals = db.relationship('Meal', secondary='mealFoods', back_populates='foods')
+    users = db.relationship('User', secondary='shoppingItems', back_populates='shopping_items')
 
     def table_columns(self):
         hidden_props = ["id"]
@@ -63,6 +78,7 @@ class Unit(db.Model):
     foods = db.relationship('Food', secondary='foodUnits', back_populates='units')
     pantries = db.relationship('UserFood')
     meals = db.relationship('MealFood')
+    shopping_items = db.relationship('ShoppingItem')
 
     def table_columns(self):
         hidden_props = ["id"]
@@ -168,3 +184,22 @@ class FoodUnit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     food_id = db.Column(db.Integer, db.ForeignKey('food.id'))
     unit_id = db.Column(db.Integer, db.ForeignKey('unit.id'))
+
+class ShoppingItem(db.Model):
+    __tablename__ = "shoppingItems"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    food_id = db.Column(db.Integer, db.ForeignKey('food.id'))
+    amount = db.Column(db.Integer, nullable=False)
+    unit = db.Column(db.Integer, db.ForeignKey('unit.id'))
+    bought = db.Column(db.Boolean, default=False, nullable=False)
+
+    def table_columns(self):
+        hidden_props = ["id"]
+        return [prop.key for prop in class_mapper(self.__class__).iterate_properties
+                if isinstance(prop, ColumnProperty) and not prop.key in hidden_props]
+
+    def add_columns(self):
+        hidden_props = ["id", "user_id", "food_id", "bought"]
+        return [prop.key for prop in class_mapper(self.__class__).iterate_properties
+                if isinstance(prop, ColumnProperty) and not prop.key in hidden_props]

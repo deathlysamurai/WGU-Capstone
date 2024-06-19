@@ -130,9 +130,13 @@ function makeEditable() {
             var selectCols = ["col-access", "col-Unit Options", "col-unit", "col-Foods"]
             if(selectCols.includes($(element).attr('id'))) {
                 var selectOptions = JSON.parse($("#selectOptions").val());
+                var disableCols = ["col-unit"]
+                var disable = disableCols.includes($(element).attr('id')) && $(element).hasClass('disable')
                 var newInput = $('<select></select>', {
-                    'class': 'form-select created-input'
+                    'class': 'form-select created-input',
+                    'style': disable ? 'background-color:grey;color:white;' : 'background-color:rgba(0,0,0,.3);color:white',
                 });
+                if(disable) { newInput.attr("disabled", "disabled") }
                 var multiSelects = ["col-Unit Options", "col-Foods"]
                 if(multiSelects.includes($(element).attr('id'))) { newInput.attr('multiple', 'multiple') }
                 Object.entries(selectOptions).forEach(([key, value]) => {
@@ -179,11 +183,11 @@ function makeUneditable() {
 }
 
 $("#table-search").on("input", function(e) {
-    var search = $("#table-search").val()
+    var search = $("#table-search").val().toLowerCase()
     $(".item-row").each(function(i, row) {
         found = false
         $(row).children("td").children("span").each(function(j, col) {
-            if(col.innerHTML.includes(search)) {
+            if(col.innerHTML.toLowerCase().includes(search)) {
                 found = true
             }
         });
@@ -192,26 +196,7 @@ $("#table-search").on("input", function(e) {
         } else {
             $(row).removeClass('d-none');
         }
-    }
-);
-    // var table = $(this).closest(".table");
-    // if(this.checked) {
-    //     activateTool("editButton");
-    //     activateTool("deleteButton");
-    //     $(this).parents(".item-row").addClass("table-active");
-    //     if($(".row-select").not(":checked").length == 0) {
-    //         $(table).find(".selectAllItems").prop("checked", true);
-    //     }
-    // } else {
-    //     if($(".row-select:checked").length == 0) {
-    //         deactivateTool("editButton");
-    //         deactivateTool("deleteButton");
-    //         deactivateTool("updateButton");
-    //     }
-    //     $(this).parents(".item-row").removeClass("table-active");
-    //     $(table).find(".selectAllItems").prop("checked", false);
-    // }
-    // e.stopPropagation();
+    });
 });
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -405,4 +390,20 @@ $(".calendar-row-add").on("click", function(e) {
     var mealName = $(this).siblings("span")[0].innerHTML
     $("#selectedMealName").val(mealName)
     $(".modal-title")[0].innerHTML = "Update Calendar - " + mealName
+})
+
+$(".bought-button").on("click", function(e) {
+    fetch("/shopping/update-bought", {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'}, 
+        body: JSON.stringify(
+            {
+                "id": $(this).closest(".item-row").find(".item-id").val(), 
+                "bought": !$(this).hasClass("text-primary")
+            }
+        )
+    }).then(res => {
+        console.log(res);
+        window.location.reload();
+    });
 })

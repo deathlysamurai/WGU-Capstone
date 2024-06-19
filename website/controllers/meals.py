@@ -5,6 +5,7 @@ from .. import db
 from sqlalchemy import func
 from datetime import date
 import calendar
+from .shopping import add_shopping_item, update_shopping_items
 
 meals = Blueprint('meals', __name__)
 
@@ -231,6 +232,10 @@ def update_weekly_meal():
 
         meal = Meal.query.get(meal_id)
         if meal:
+            meal_foods = MealFood.query.filter_by(meal_id=meal_id).all()
+            for meal_food in meal_foods:
+                food = Food.query.get(meal_food.food_id)
+                add_shopping_item(True, food.name, meal_food.amount, meal_food.unit)
             setattr(current_user, calendar.day_name[int(weekday)][:3].lower()+"Meal", meal_id)
             db.session.commit()
             flash('Meal added to calendar.', category='success')
@@ -282,6 +287,11 @@ def reset_weekly_meal():
     if request.method == 'POST':
         weekday = request.form.get('weekday')
 
+        meal = Meal.query.get(getattr(current_user, calendar.day_name[int(weekday)][:3].lower()+"Meal"))
+        meal_foods = MealFood.query.filter_by(meal_id=meal.id).all()
+        for meal_food in meal_foods:
+            update_shopping_items(True, meal_food.food_id, meal_food.amount, meal_food.unit)
+
         setattr(current_user, calendar.day_name[int(weekday)][:3].lower()+"Meal", None)
         db.session.commit()
         flash('Meal reset.', category='success')
@@ -297,6 +307,10 @@ def update_calendar_day():
 
         meal = Meal.query.filter_by(name=meal_name).first()
         if meal:
+            meal_foods = MealFood.query.filter_by(meal_id=meal.id).all()
+            for meal_food in meal_foods:
+                food = Food.query.get(meal_food.food_id)
+                add_shopping_item(True, food.name, meal_food.amount, meal_food.unit)
             userMeal = UserMeal.query.filter_by(user_id=current_user.id, meal_id=meal.id).first()
             if not userMeal:
                 userMeal = UserMeal(user_id=current_user.id, meal_id=meal.id)

@@ -74,16 +74,23 @@
                         {% else %}
                             {% if col in ["Unit Options", "Foods"] %}
                                 <td id="col-{{ col }}"><span>{{ display_relationship[item["id"]] if display_relationship[item["id"]]|length > 0}}</span></td>
-                            {% elif col == "name" and page == "pantry" %}
+                            {% elif col == "name" and page == "pantry" or (page == "shopping" and col in ["name", "unit"]) %}
                                 <td id="col-{{ col }}" class="disable"><span>{{ item[col] }}</span></td>
                             {% elif page == "edit-calendar" %}
                                 <td class="calendar-recommendation-row">
                                     <span>{{ item[col] }}</span>
                                     <i class="calendar-row-add text-success fa-solid fa-circle-plus pointer" data-bs-toggle="modal" data-bs-target="#calendarAddModal"></i>
                                 </td>
+                            {% elif page == "shopping" and col == "bought" %}
+                                {% if item[col] %}
+                                <td id="col-{{ col }}"><span><i class="text-primary fa-solid fa-cart-shopping bought-button"></i></span></td>
+                                {% else %}
+                                <td id="col-{{ col }}"><span><i class="fa-solid fa-cart-shopping bought-button"></i></span></td>
+                                {% endif %}
                             {% else %}
                                 <td id="col-{{ col }}"><span>{{ item[col] }}</span></td>
                             {% endif %}
+                            
                         {% endif %}
                     {% endfor %}
                 </tr>
@@ -132,17 +139,23 @@
         <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                {% if page in ["shopping"] %}
+                <h1 class="modal-title fs-5">Add Shopping Item</h1>
+                {% else %}
                 <h1 class="modal-title fs-5">Add {{ table_title[:-1] }}</h1>
+                {% endif %}
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             {% if page in ["pantry", "meals"] %}
             <form action="/{{ page }}/add-{{ table_title[:-1] | lower }}" method="POST">
+            {% elif page in ["shopping"] %}
+            <form action="/{{ page }}/add-shopping-item" method="POST">
             {% elif admin_route %}
             <form action="/admin/{{ table_title | lower }}/add-{{ table_title[:-1] | lower }}" method="POST">
             {% endif %}
                 <div class="modal-body">
                     {% for col in add_columns %}
-                        {% if col in ["access", "units", "foods"] %}
+                        {% if col in ["access", "units", "foods"] or (page in ["shopping"] and col in ["unit"]) %}
                             <div>
                                 <select class="form-select" id="{{ col }}" name="{{ col }}" {{'multiple' if col in ['units', 'foods']}}>
                                     <option selected>Choose {{ col | capitalize}}</option>
@@ -156,6 +169,16 @@
                             <input id="{{ col }}" type="text" name="{{ col }}" list="options">
                                 <datalist id="options">
                                     {% for option in select_options %}
+                                        <option value="{{ option | capitalize }}">
+                                    {% endfor %}
+                                </datalist>
+                            <label style="top: -5px !important;" for="{{ col }}">{{ col | capitalize }}</label>
+                        </div>
+                        {% elif page in ["shopping"] and col in ["name"] %}
+                        <div class="inputbox">
+                            <input id="{{ col }}" type="text" name="{{ col }}" list="options">
+                                <datalist id="options">
+                                    {% for option in food_options %}
                                         <option value="{{ option | capitalize }}">
                                     {% endfor %}
                                 </datalist>
@@ -185,20 +208,34 @@
         <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+            {% if page in ["shopping"] %}
+            <h1 class="modal-title fs-5">Remove Shopping Items</h1>
+            {% else %}
             <h1 class="modal-title fs-5">Delete {{ table_title }}</h1>
+            {% endif %}
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             {% if page in ["pantry", "meals"] %}
             <form action="/{{ page }}/delete-{{ table_title | lower }}" method="POST">
+            {% elif page in ["shopping"] %}
+            <form action="/{{ page }}/remove-shopping-items" method="POST">
             {% elif admin_route %}
             <form action="/admin/{{ table_title | lower }}/delete-{{ table_title | lower }}" method="POST">
             {% endif %}
                 <div class="modal-body">
                     <input type='hidden' name='delete-items' id="delete-items" value='' />
+                    {% if page in ["shopping"] %}
+                    <p>Are you sure you would like to remove shopping items?</p>
+                    {% else %}
                     <p>Are you sure you would like to delete {{ table_title | lower }}?</p>
+                    {% endif %}
                 </div>
                 <div class="modal-footer">
+                    {% if page in ["shopping"] %}
+                    <button type="submit" class="btn btn-secondary">Remove</button>
+                    {% else %}
                     <button type="submit" class="btn btn-secondary">Delete</button>
+                    {% endif %}
                 </div>
             </form>
         </div>
@@ -209,17 +246,27 @@
         <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+            {% if page in ["shopping"] %}
+            <h1 class="modal-title fs-5">Update Shopping Items</h1>
+            {% else %}
             <h1 class="modal-title fs-5">Update {{ table_title }}</h1>
+            {% endif %}
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             {% if page == "pantry" %}
             <form action="/{{ page }}/update-{{ table_title | lower }}" method="POST">
+            {% elif page in ["shopping"] %}
+            <form action="/{{ page }}/update-shopping-items" method="POST">
             {% elif admin_route %}
             <form action="/admin/{{ table_title | lower }}/update-{{ table_title | lower }}" method="POST">
             {% endif %}
                 <div class="modal-body">
                     <input type='hidden' name='update-items' id="update-items" value='' />
+                    {% if page in ["shopping"] %}
+                    <p>Are you sure you would like to update shopping items?</p>
+                    {% else %}
                     <p>Are you sure you would like to update {{ table_title | lower }}?</p>
+                    {% endif %}
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-secondary">Update</button>
