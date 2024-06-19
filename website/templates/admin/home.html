@@ -2,12 +2,29 @@
 {% block title %}Admin - Home{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <a class="nav-item nav-link {{ 'active-link' if page == 'users'}}" href="/admin/users">Users</a>
-                <a class="nav-item nav-link {{ 'active-link' if page == 'foods'}}" href="/admin/foods">Foods</a>
-                <a class="nav-item nav-link {{ 'active-link' if page == 'meals'}}" href="/admin/meals">Meals</a>
-                <a class="nav-item nav-link {{ 'active-link' if page == 'units'}}" href="/admin/units">Units</a>
-                <a class="nav-item nav-link {{ 'active-link' if page == 'user foods'}}" href="/admin/user_foods">User Foods</a>
-                <a class="nav-item nav-link {{ 'active-link' if page == 'meal foods'}}" href="/admin/meal_foods">Meal Foods</a>
+    <div class="container d-flex flex-wrap">
+        <a class="p-3 nav-item nav-link {{ 'active-link' if page == 'users'}}" href="/admin/users">Users</a>
+        <a class="p-3 nav-item nav-link {{ 'active-link' if page == 'foods'}}" href="/admin/foods">Foods</a>
+        <a class="p-3 nav-item nav-link {{ 'active-link' if page == 'meals'}}" href="/admin/meals">Meals</a>
+        <a class="p-3 nav-item nav-link {{ 'active-link' if page == 'units'}}" href="/admin/units">Units</a>
+        <a class="p-3 nav-item nav-link {{ 'active-link' if page == 'user foods'}}" href="/admin/user_foods">User Foods</a>
+        <a class="p-3 nav-item nav-link {{ 'active-link' if page == 'meal foods'}}" href="/admin/meal_foods">Meal Foods</a>
     </div>
+    <form action="/admin" method="POST">
+        <select class="form-select" id="report_type" name="report_type">
+            <option selected>Choose Report Type</option>
+            <option value="users">Users</option>
+            <option value="foods">Foods</option>
+            <option value="units">Units</option>
+            <option value="meals">Meals</option>
+        </select>
+        <button type="submit" class="m-3 float-end btn btn-secondary">Generate Report</button>
+    </form>
+    
+    {% if report %}
+        {% with toolbar=false %}
+            {% include "partials/table.html" %}
+        {% endwith %}
+        {{ report_date }}
+    {% endif %}
 {% endblock %}
