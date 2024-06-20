@@ -8,10 +8,14 @@ db = SQLAlchemy()
 load_dotenv()
 DB_NAME = os.environ.get("DB_URL")
 
-def create_app():
+def create_app(config_name=None):
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.environ.get("SEC_KEY")
     app.config['SQLALCHEMY_DATABASE_URI'] = DB_NAME
+
+    if config_name:
+        app.config.from_object(config_name)
+
     db.init_app(app)
 
     from .controllers.general import general
@@ -43,7 +47,8 @@ def create_app():
     from .models import User
     from .data_loaders.load_data import run_data_loaders
 
-    create_database(app)
+    if not config_name:
+        create_database(app)
 
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
@@ -53,7 +58,8 @@ def create_app():
     def load_user(id):
         return User.query.get(int(id))
     
-    run_data_loaders(app, db)
+    if not config_name:
+        run_data_loaders(app, db)
 
     return app
 

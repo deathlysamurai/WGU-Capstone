@@ -12,6 +12,8 @@ def home():
     items = []
     report_date = datetime.datetime.now()
     report = False
+    table_columns = []
+    table_title = ''
     if request.method == 'POST':
         report = True
         report_type = request.form.get('report_type')
